@@ -1,0 +1,167 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "creditguard"
+version = "0.1.0"
+description = "Credit Default Early Warning & Decisioning System"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+license = {text = "MIT"}
+authors = [{name = "Joseph Yu"}]
+keywords = ["credit-risk", "machine-learning", "mlops", "fairness", "decisioning", "lightgbm"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.urls]
+Repository = "https://github.com/josephhzy/creditguard"
+Issues = "https://github.com/josephhzy/creditguard/issues"
+
+dependencies = [
+    # Data
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "pyarrow>=14.0",
+    "pyyaml>=6.0",
+    # ML
+    "scikit-learn>=1.3",
+    "xgboost>=2.0",
+    "lightgbm>=4.0",
+    "imbalanced-learn>=0.11",
+    "boruta>=0.3",
+    "optuna>=3.4",
+    "shap>=0.43",
+    "scipy>=1.11",
+    "statsmodels>=0.14",   # variance_inflation_factor for VIF selection
+    # API
+    "fastapi>=0.104",
+    "uvicorn[standard]>=0.24",
+    "pydantic>=2.5",
+    # Experiment tracking
+    "mlflow>=2.9",
+    # Visualization
+    "matplotlib>=3.8",
+    "seaborn>=0.13",
+    # Utilities
+    "structlog>=23.2",
+    "rich>=13.7",
+    "typer>=0.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "ruff>=0.1.9",
+    "mypy>=1.7",
+    "pre-commit>=3.6",
+    "pandas-stubs>=2.0",
+    "httpx>=0.25",
+]
+
+[tool.setuptools.packages.find]
+# `experiments/` is intentionally NOT included — those modules are
+# MLflow-tracked research drivers run with `make experiments`, not
+# library code. Excluded from the installed wheel matches its exclusion
+# from coverage below; consumers should not ``import experiments`` from
+# downstream code.
+include = ["data*", "features*", "training*", "evaluation*",
+           "decisioning*", "monitoring*", "serving*"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "TCH"]
+# N rules (naming) intentionally excluded: sklearn convention uses X, y,
+# X_train, X_val etc. which ruff flags as "non-lowercase". Accepting those
+# as the community standard rather than renaming every ML variable.
+# A004 (builtin-import-shadowing) excluded — we shadow 'id' and 'type' in
+# small local scopes where the reader expects those names.
+ignore = [
+    "E501",  # line too long — handled by formatter
+    "E402",  # module-level import not at top — needed for sys.path tricks in scripts/
+    "B008",  # function call in default — standard FastAPI Depends() pattern
+]
+
+[tool.mypy]
+python_version = "3.10"
+warn_unused_configs = true
+check_untyped_defs = true
+# Strict typing is enforced on the web-facing serving package only — that is
+# the surface where a type error becomes a 500 in front of a caller. The rest
+# of the codebase (training, evaluation, decisioning, monitoring) is checked
+# but not required to be fully annotated; it is research/orchestration code
+# and full strictness would be aspirational rather than load-bearing.
+disallow_untyped_defs = false
+warn_return_any = false
+
+# Most ML libraries we depend on (sklearn, lightgbm, xgboost, imblearn, boruta,
+# optuna, shap, statsmodels, mlflow, seaborn, structlog) do not ship PEP 561
+# type information. Treat the boundary as untyped rather than annotating
+# every framework import site.
+[[tool.mypy.overrides]]
+module = [
+    "pandas",
+    "pandas.*",
+    "sklearn.*",
+    "lightgbm.*",
+    "xgboost.*",
+    "imblearn.*",
+    "boruta.*",
+    "optuna.*",
+    "shap.*",
+    "statsmodels.*",
+    "mlflow.*",
+    "structlog.*",
+    "scipy.*",
+    "matplotlib.*",
+    "pyarrow.*",
+    "yaml",
+]
+ignore_missing_imports = true
+
+# Strict only on the serving package, where types are the contract.
+[[tool.mypy.overrides]]
+module = ["serving.*"]
+disallow_untyped_defs = true
+warn_return_any = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Keep `make test` fast. Coverage is opted in by the `coverage:` Make
+# target and by CI (which passes --cov flags explicitly); forcing --cov
+# here would slow every local test invocation for no gain.
+addopts = "-v --tb=short"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks integration tests",
+]
+
+[tool.coverage.run]
+# `streamlit_app.py` is exercised manually against the dashboard and not in
+# unit tests; `training/experiments.py` and `training/hyperparameter_search.py`
+# are MLflow-tracked research drivers, not library code. `scripts/` and
+# `monitoring/run_checks.py` are CLI entry-points exercised end-to-end via
+# `make` targets, not unit tests. Excluding them keeps the coverage gate
+# honest about what tests cover.
+omit = [
+    "tests/*",
+    "experiments/*",
+    "mlruns/*",
+    "scripts/*",
+    "streamlit_app.py",
+    "training/experiments.py",
+    "training/hyperparameter_search.py",
+    "monitoring/run_checks.py",
+]

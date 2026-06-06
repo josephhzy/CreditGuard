@@ -1,0 +1,149 @@
+{
+  "champion": {
+    "model": "lightgbm",
+    "metrics": {
+      "model_name": "lightgbm",
+      "roc_auc": 0.7620795679061996,
+      "pr_auc": 0.2466698482782162,
+      "brier_score": 0.17731528709964675,
+      "ks_statistic": 0.3917160846014358,
+      "gini": 0.5241591358123991,
+      "calibration_gap": 0.29997542840162816,
+      "adverse_impact_ratio": 0.6056,
+      "demographic_parity_diff": 0.116,
+      "equalized_odds_diff": 0.108,
+      "interpretability_tier": "medium",
+      "n_features": 15
+    },
+    "discrimination": {
+      "roc_auc": 0.7620795679061996,
+      "pr_auc": 0.2466698482782162,
+      "ks_statistic": 0.3917160846014358,
+      "gini": 0.5241591358123991,
+      "lift_at_k": {
+        "top_1pct": 5.76858499905845,
+        "top_5pct": 4.15402573395885,
+        "top_10pct": 3.389739119824266,
+        "top_20pct": 2.630421444141706
+      }
+    },
+    "calibration": {
+      "brier_score": 0.17731528709964675,
+      "ece": 0.29997542840162816,
+      "platt_brier": 0.06776996723898669,
+      "isotonic_brier": 0.0675640136074027
+    },
+    "threshold": {
+      "optimal_threshold": 0.5,
+      "expected_cost_at_optimal": 96669000.0,
+      "review_queue": {
+        "n_approve": 43103.0,
+        "n_decline": 129784.0,
+        "n_review": 134624.0,
+        "pct_approve": 0.14016734360722055,
+        "pct_decline": 0.4220466910126792,
+        "pct_review": 0.43778596538010023
+      }
+    }
+  },
+  "challenger": {
+    "model": "xgboost",
+    "metrics": {
+      "model_name": "xgboost",
+      "roc_auc": 0.761169274896898,
+      "pr_auc": 0.2440457249897135,
+      "brier_score": 0.209920487416068,
+      "ks_statistic": 0.39117601337746954,
+      "gini": 0.522338549793796,
+      "calibration_gap": 0.34602431073308537,
+      "adverse_impact_ratio": 1.0,
+      "demographic_parity_diff": 0.0,
+      "equalized_odds_diff": 0.0,
+      "interpretability_tier": "medium",
+      "n_features": 15
+    },
+    "discrimination": {
+      "roc_auc": 0.761169274896898,
+      "pr_auc": 0.2440457249897135,
+      "ks_statistic": 0.39117601337746954,
+      "gini": 0.522338549793796,
+      "lift_at_k": {
+        "top_1pct": 5.792755047937186,
+        "top_5pct": 4.132272689967987,
+        "top_10pct": 3.388530656679944,
+        "top_20pct": 2.6185382232225365
+      }
+    },
+    "calibration": {
+      "brier_score": 0.209920487416068,
+      "ece": 0.34602431073308537,
+      "platt_brier": 0.0678744910695117,
+      "isotonic_brier": 0.06765959159217447
+    },
+    "threshold": {
+      "optimal_threshold": 0.54,
+      "expected_cost_at_optimal": 96660600.0,
+      "review_queue": {
+        "n_approve": 30783.0,
+        "n_decline": 157327.0,
+        "n_review": 119401.0,
+        "pct_approve": 0.10010373612651255,
+        "pct_decline": 0.5116142186783562,
+        "pct_review": 0.3882820451951312
+      }
+    }
+  },
+  "comparison": {
+    "pr_auc_improvement": -0.002624,
+    "calibration_degradation": 0.032605,
+    "fairness_within_tolerance": false,
+    "fairness_source": "champion_oof_multi_slice (reconcile_fairness.py)",
+    "challenger_fairness_within_tolerance": null,
+    "interpretability_acceptable": true,
+    "notes": [
+      "Challenger PR-AUC did not improve (-0.0026)",
+      "Calibration degraded beyond tolerance: delta=+0.0326 > 0.02",
+      "Multi-slice AIR floor at t=0.4: 0.6056 on NAME_EDUCATION_TYPE (FAILS 80% rule)."
+    ],
+    "decision": "investigate"
+  },
+  "fairness_slices": {
+    "tolerance": 0.8,
+    "headline_slice": "NAME_EDUCATION_TYPE",
+    "headline_threshold": 0.4,
+    "headline_air": 0.6056,
+    "passes_80pct_rule": false,
+    "per_slice": [
+      {
+        "sensitive_attribute": "CODE_GENDER",
+        "threshold": 0.4,
+        "n_rows": 307507,
+        "air": 0.8125,
+        "passes_80pct_rule": true
+      },
+      {
+        "sensitive_attribute": "CODE_GENDER",
+        "threshold": 0.15,
+        "n_rows": 307507,
+        "air": 0.7122,
+        "passes_80pct_rule": false
+      },
+      {
+        "sensitive_attribute": "NAME_EDUCATION_TYPE",
+        "threshold": 0.4,
+        "n_rows": 307511,
+        "air": 0.6056,
+        "passes_80pct_rule": false
+      },
+      {
+        "sensitive_attribute": "NAME_EDUCATION_TYPE",
+        "threshold": 0.15,
+        "n_rows": 307511,
+        "air": 0.2115,
+        "passes_80pct_rule": false
+      }
+    ],
+    "source": "scripts/reconcile_fairness.py against artifacts/oof_predictions_scored.parquet",
+    "see_also": "governance/FAIRNESS_REPORT.md section 1"
+  }
+}

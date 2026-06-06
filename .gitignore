@@ -1,0 +1,64 @@
+# Data (large files)
+data/raw/
+data/processed/
+*.csv
+*.parquet
+raw/
+
+# Models
+models/
+*.pkl
+*.joblib
+
+# MLflow tracking store (project standardised on `mlruns/`).
+mlruns/
+
+# OS junk (so contributors on different OSes do not accidentally commit it).
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+venv/
+.venv/
+.streamlit/secrets.toml
+
+# Ruff / mypy
+.ruff_cache/
+.mypy_cache/
+
+# Private notes
+*.private.md
+.claude/
+
+# Ship dashboard-required artifacts (override *.csv and *.parquet above)
+!artifacts/shap_mean_abs.csv
+!artifacts/fairness_threshold_sweep.csv
+!artifacts/oof_predictions_scored.parquet
+
+
+# AI-assistant artifacts / internal planning — never publish
+CLAUDE.md

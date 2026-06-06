@@ -1,0 +1,27 @@
+# Bulky / sensitive — must not be baked into a deployable image.
+data/raw/
+data/processed/
+raw/
+
+# Experiment tracking, coverage, caches.
+mlruns/
+htmlcov/
+.coverage
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Dev / VCS.
+.git/
+.venv/
+venv/
+.claude/
+__pycache__/
+*.pyc
+
+# Not needed in a serving image.
+tests/
+
+# Local secrets / overrides.
+*.private.md
+.env

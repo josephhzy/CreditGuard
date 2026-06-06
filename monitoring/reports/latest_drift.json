@@ -1,0 +1,133 @@
+{
+  "report_date": "2026-04-29",
+  "generated_at": "2026-04-29T13:43:45.277289+00:00",
+  "demo": false,
+  "notes": [
+    "reference/current split: 0.80/0.20"
+  ],
+  "n_reference_rows": 246008,
+  "n_current_rows": 61503,
+  "alert_threshold": 0.1,
+  "features": [
+    {
+      "feature": "feat_annuity",
+      "method": "psi",
+      "statistic": 0.001048,
+      "threshold": 0.1,
+      "drifted": false,
+      "severity": "GREEN"
+    },
+    {
+      "feature": "feat_credit_to_goods",
+      "method": "psi",
+      "statistic": 1e-06,
+      "threshold": 0.1,
+      "drifted": false,
+      "severity": "GREEN"
+    },
+    {
+      "feature": "feat_employment_years",
+      "method": "psi",
+      "statistic": 1.8e-05,
+      "threshold": 0.1,
+      "drifted": false,
+      "severity": "GREEN"
+    },
+    {
+      "feature": "feat_education_ordinal",
+      "method": "psi",
+      "statistic": 4e-06,
+      "threshold": 0.1,
+      "drifted": false,
+      "severity": "GREEN"
+    },
+    {
+      "feature": "feat_age_bin",
+      "method": "psi",
+      "statistic": 4.1e-05,
+      "threshold": 0.1,
+      "drifted": false,
+      "severity": "GREEN"
+    },
+    {
+      "feature": "feat_document_count",
+      "method": "psi",
+      "statistic": 0.000492,
+      "threshold": 0.1,
+      "drifted": false,
+      "severity": "GREEN"
+    },
+    {
+      "feature": "feat_bureau_BUREAU_CREDIT_TYPE_nunique",
+      "method": "psi",
+      "statistic": 7.3e-05,
+      "threshold": 0.1,
+      "drifted": false,
+      "severity": "GREEN"
+    },
+    {
+      "feature": "feat_prev_PREV_NAME_CASH_LOAN_PURPOSE_nunique",
+      "method": "psi",
+      "statistic": 0.000449,
+      "threshold": 0.1,
+      "drifted": false,
+      "severity": "GREEN"
+    },
+    {
+      "feature": "feat_debt_burden",
+      "method": "psi",
+      "statistic": 0.000691,
+      "threshold": 0.1,
+      "drifted": false,
+      "severity": "GREEN"
+    },
+    {
+      "feature": "feat_annuity_to_credit",
+      "method": "psi",
+      "statistic": 0.000165,
+      "threshold": 0.1,
+      "drifted": false,
+      "severity": "GREEN"
+    },
+    {
+      "feature": "feat_ext_source_2",
+      "method": "psi",
+      "statistic": 2.7e-05,
+      "threshold": 0.1,
+      "drifted": false,
+      "severity": "GREEN"
+    },
+    {
+      "feature": "feat_ext_1x2",
+      "method": "psi",
+      "statistic": 2e-06,
+      "threshold": 0.1,
+      "drifted": false,
+      "severity": "GREEN"
+    },
+    {
+      "feature": "feat_ext_2x3",
+      "method": "psi",
+      "statistic": 1.5e-05,
+      "threshold": 0.1,
+      "drifted": false,
+      "severity": "GREEN"
+    },
+    {
+      "feature": "feat_ext_source_mean",
+      "method": "psi",
+      "statistic": 2e-06,
+      "threshold": 0.1,
+      "drifted": false,
+      "severity": "GREEN"
+    },
+    {
+      "feature": "feat_ext_source_std",
+      "method": "psi",
+      "statistic": 2.8e-05,
+      "threshold": 0.1,
+      "drifted": false,
+      "severity": "GREEN"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+# CreditGuard Training Configuration
+# ───────────────────────────────────
+
+seed: 42
+
+data:
+  raw_dir: "data/raw/"
+  processed_dir: "data/processed/"
+  features_path: "data/processed/features.parquet"
+  target_column: "TARGET"
+  id_column: "SK_ID_CURR"
+
+feature_engineering:
+  families:
+    - application_profile
+    - bureau_history
+    - previous_apps
+    - payment_behaviour
+    - utilization
+    - risk_ratios
+    - temporal_trends
+
+feature_selection:
+  method: "hybrid"  # boruta, rfe, vif, hybrid
+  boruta:
+    max_iter: 200
+    alpha: 0.05
+  rfe:
+    n_features_to_select: 50
+    step: 5
+  vif:
+    threshold: 10.0
+
+training:
+  model: "lightgbm"  # logistic, rf, balanced_rf, xgboost, lightgbm, easyensemble, rusboost
+  cv:
+    strategy: "stratified_group"  # stratified, stratified_group, temporal
+    n_splits: 5
+    temporal_split_date: null  # auto-detect if null
+  hyperparameter_search:
+    enabled: true
+    engine: "optuna"
+    n_trials: 50
+    metric: "pr_auc"
+
+evaluation:
+  discrimination:
+    metrics: ["roc_auc", "pr_auc", "ks_statistic", "gini"]
+  calibration:
+    methods: ["platt", "isotonic"]
+    n_bins: 10
+  threshold:
+    cost_matrix:
+      # Values derived in decisioning/COST_MATRIX.md:
+      #   FP_cost ≈ NIM × EAD × term  ≈ 0.10 × $10,000 × 2 years ≈ $600
+      #     (net present value of lost interest margin on a declined-good loan)
+      #   FN_cost ≈ EAD × LGD         ≈ $10,000 × 0.60            ≈ $6,000
+      #     (unrecovered principal on an approved defaulter)
+      # The defensible number is the 10:1 ratio; the absolute scale is the
+      # Basel-style book-average derivation — not an arbitrary placeholder.
+      fp_cost: 600      # cost of wrongly declining a good applicant (lost NIM)
+      fn_cost: 6000     # cost of approving a defaulter (EAD × LGD)
+    target_recall: 0.70
+  fairness:
+    sensitive_features: ["CODE_GENDER", "NAME_EDUCATION_TYPE"]
+    metrics: ["demographic_parity", "equalized_odds", "adverse_impact_ratio"]
+    tolerance: 0.80  # 80% rule for adverse impact
+
+decisioning:
+  # IMPORTANT: these thresholds apply to the RAW LightGBM model score —
+  # the same scale `serving.routes.predict._score_with_bundle` returns as
+  # `raw_score`. They are NOT applied to the Platt-calibrated PD that the
+  # API surfaces as `risk_score`. The two live on different scales by
+  # design; see decisioning/THRESHOLD_JUSTIFICATION.md. The calibrated-PD
+  # equivalents of these gates are roughly 0.02 (approve) and 0.06 (decline).
+  bands:
+    approve: [0.0, 0.15]      # raw_score < 0.15 → approve
+    review: [0.15, 0.40]      # 0.15 ≤ raw_score < 0.40 → manual review
+    decline: [0.40, 1.0]      # raw_score ≥ 0.40 → decline
+
+monitoring:
+  psi:
+    threshold_green: 0.10
+    threshold_amber: 0.20
+  drift:
+    methods: ["psi", "ks", "js_divergence"]
+    alert_threshold: 0.15
+  retrain:
+    strategy: "rolling"  # rolling, expanding
+    window_months: 6
+    trigger: "performance_drop"  # performance_drop, drift_alert, scheduled
+    performance_drop_threshold: 0.03  # 3% PR-AUC drop triggers retrain
+
+mlflow:
+  tracking_uri: "mlruns/"
+  experiment_name: "creditguard"

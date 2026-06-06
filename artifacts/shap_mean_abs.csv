@@ -1,0 +1,16 @@
+feature_name,mean_abs_shap
+feat_ext_source_mean,0.4377409680029155
+feat_annuity_to_credit,0.23882648263268177
+feat_ext_2x3,0.1790716240994294
+feat_employment_years,0.13255336591259803
+feat_education_ordinal,0.1245142818561832
+feat_ext_1x2,0.11968156407620636
+feat_credit_to_goods,0.1135543731197635
+feat_annuity,0.09418769550417563
+feat_ext_source_2,0.08379551451188723
+feat_age_bin,0.07124168629764659
+feat_document_count,0.07058300734059085
+feat_bureau_BUREAU_CREDIT_TYPE_nunique,0.05608577668361721
+feat_prev_PREV_NAME_CASH_LOAN_PURPOSE_nunique,0.05440291003073341
+feat_debt_burden,0.043126143207218914
+feat_ext_source_std,0.027917958526978415

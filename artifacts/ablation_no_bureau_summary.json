@@ -1,0 +1,19 @@
+{
+  "config": "config\\train_no_bureau.yaml",
+  "artifact": "artifacts\\lightgbm_no_bureau.pkl",
+  "n_features_champion": 15,
+  "n_features_ablation": 10,
+  "excluded_features": [
+    "feat_ext_1x2",
+    "feat_ext_2x3",
+    "feat_ext_source_2",
+    "feat_ext_source_mean",
+    "feat_ext_source_std"
+  ],
+  "oof": {
+    "roc_auc": 0.7025895397238798,
+    "pr_auc": 0.17708918483251168,
+    "ks": 0.300078207898324
+  },
+  "elapsed_seconds": 662.4
+}

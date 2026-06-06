@@ -1,0 +1,111 @@
+# CreditGuard Training Configuration — no-bureau variant
+# ─────────────────────────────────────────────────────────
+#
+# Purpose: ablation study measuring ROC-AUC / PR-AUC / KS loss when all
+# External-score (bureau-derived) features are removed. Rationale: in a
+# real deployment the EXT_SOURCE_* columns are contractually licensed
+# from bureau vendors and may be unavailable for segments (thin-file
+# applicants, new-credit markets, bureau outage). Quantifying the lift
+# that comes from engineered non-bureau features is a business-critical
+# number for deployment planning.
+#
+# What changes vs train.yaml:
+# - feature_selection.exclude_prefixes added — filters the champion's
+#   already-selected feature list; no Boruta or VIF re-selection is run.
+#   The ablation re-uses champion hyperparameters and drops only features
+#   matching these prefixes.
+# - training.hyperparameter_search block is NOT read by retrain_no_bureau.py —
+#   champion HPs are borrowed directly. Retained for documentation completeness only.
+# - Artifact name lightgbm_no_bureau.pkl so the champion artefact is
+#   not overwritten.
+
+seed: 42
+
+data:
+  raw_dir: "data/raw/"
+  processed_dir: "data/processed/"
+  features_path: "data/processed/features.parquet"
+  target_column: "TARGET"
+  id_column: "SK_ID_CURR"
+
+feature_engineering:
+  families:
+    - application_profile
+    - bureau_history
+    - previous_apps
+    - payment_behaviour
+    - utilization
+    - risk_ratios
+    - temporal_trends
+
+feature_selection:
+  method: "hybrid"
+  # NEW: drop every feature matching these prefixes before selection.
+  # Consumed by scripts/retrain_no_bureau.py; the default pipeline in
+  # training/train.py ignores this key.
+  exclude_prefixes:
+    - "feat_ext_source_"
+    - "feat_ext_1x"
+    - "feat_ext_2x"
+  boruta:
+    max_iter: 200
+    alpha: 0.05
+  rfe:
+    n_features_to_select: 50
+    step: 5
+  vif:
+    threshold: 10.0
+
+training:
+  model: "lightgbm"
+  cv:
+    strategy: "stratified_group"
+    n_splits: 5
+    temporal_split_date: null
+  hyperparameter_search:
+    enabled: true
+    engine: "optuna"
+    n_trials: 30   # NOT used by retrain_no_bureau.py — champion HPs are borrowed directly
+    metric: "pr_auc"
+
+evaluation:
+  discrimination:
+    metrics: ["roc_auc", "pr_auc", "ks_statistic", "gini"]
+  calibration:
+    methods: ["platt", "isotonic"]
+    n_bins: 10
+  threshold:
+    cost_matrix:
+      fp_cost: 600
+      fn_cost: 6000
+    target_recall: 0.70
+  fairness:
+    sensitive_features: ["CODE_GENDER", "NAME_EDUCATION_TYPE"]
+    metrics: ["demographic_parity", "equalized_odds", "adverse_impact_ratio"]
+    tolerance: 0.80
+
+decisioning:
+  # See config/train.yaml for the full annotation: these are RAW-score
+  # bands (not calibrated-PD), inherited unchanged for the ablation so the
+  # auto-approve / review / auto-decline volumes are comparable.
+  bands:
+    approve: [0.0, 0.15]      # raw_score < 0.15 → approve
+    review: [0.15, 0.40]      # 0.15 ≤ raw_score < 0.40 → manual review
+    decline: [0.40, 1.0]      # raw_score ≥ 0.40 → decline
+
+monitoring:
+  psi:
+    threshold_green: 0.10
+    threshold_amber: 0.20
+  drift:
+    methods: ["psi", "ks", "js_divergence"]
+    alert_threshold: 0.15
+  retrain:
+    strategy: "rolling"
+    window_months: 6
+    trigger: "performance_drop"
+    performance_drop_threshold: 0.03
+
+mlflow:
+  tracking_uri: "mlruns/"
+  experiment_name: "creditguard_ablation"

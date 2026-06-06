@@ -1,0 +1,26 @@
+# Expected engineered-feature column names for serving.
+#
+# This file is a fallback for serving when the model bundle is missing
+# `feature_names`. The shipped LightGBM bundle does carry feature_names, so
+# in normal operation this list is informational and the bundle is the
+# source of truth. Keep in sync with whatever was selected during training
+# (see `features/FEATURE_IMPORTANCE.md` for derivation and SHAP attributions).
+#
+# Selection: Boruta (200 iterations) -> VIF (threshold 10.0). ~80 engineered
+# features were reduced to the 15 below.
+features:
+  - feat_annuity
+  - feat_credit_to_goods
+  - feat_employment_years
+  - feat_education_ordinal
+  - feat_age_bin
+  - feat_document_count
+  - feat_bureau_BUREAU_CREDIT_TYPE_nunique
+  - feat_prev_PREV_NAME_CASH_LOAN_PURPOSE_nunique
+  - feat_debt_burden
+  - feat_annuity_to_credit
+  - feat_ext_source_2
+  - feat_ext_1x2
+  - feat_ext_2x3
+  - feat_ext_source_mean
+  - feat_ext_source_std
