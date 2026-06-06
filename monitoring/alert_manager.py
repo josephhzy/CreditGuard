@@ -343,7 +343,9 @@ def retrain_trigger(
     whether the condition has persisted across the required number of
     consecutive daily runs.
     """
-    n_red = len({a.feature for a in alerts if a.severity == AlertSeverity.RED and a.feature != "_model_"})
+    n_red = len(
+        {a.feature for a in alerts if a.severity == AlertSeverity.RED and a.feature != "_model_"}
+    )
     n_amber = sum(1 for a in alerts if a.severity == AlertSeverity.AMBER)
     has_calibration_red = any(
         a.severity == AlertSeverity.RED and "calibration" in a.metric for a in alerts

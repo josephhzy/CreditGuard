@@ -117,7 +117,7 @@ def _estimate_impact(
         n_review = n - n_approve - n_decline
 
         approve_defaults = sum(
-            1 for s, d in zip(scores, defaults) if s < approve_upper and d == 1
+            1 for s, d in zip(scores, defaults, strict=False) if s < approve_upper and d == 1
         )
         total_defaults = sum(defaults)
 

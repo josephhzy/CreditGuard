@@ -231,9 +231,7 @@ def main():
     lgb_path = PROJECT_ROOT / "artifacts" / "lightgbm_model.pkl"
     xgb_path = PROJECT_ROOT / "artifacts" / "xgboost_model.pkl"
     if not lgb_path.exists():
-        raise FileNotFoundError(
-            f"Champion artifact missing at {lgb_path}. Run `make train` first."
-        )
+        raise FileNotFoundError(f"Champion artifact missing at {lgb_path}. Run `make train` first.")
     lgb_artifact = load_artifact(lgb_path)
 
     artifacts_to_score: list[tuple[str, dict]] = [("lightgbm", lgb_artifact)]

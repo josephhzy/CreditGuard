@@ -82,8 +82,11 @@ def build_application_features(
     else:
         # Full-dataset call (build_all.py): derive edges from all rows.
         _quintile_series, _edges = pd.qcut(
-            df["AMT_INCOME_TOTAL"], q=5, labels=False,
-            duplicates="drop", retbins=True,
+            df["AMT_INCOME_TOTAL"],
+            q=5,
+            labels=False,
+            duplicates="drop",
+            retbins=True,
         )
         out["feat_income_quintile"] = _quintile_series.fillna(SENTINEL).astype(float)
 

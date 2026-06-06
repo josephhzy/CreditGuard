@@ -22,10 +22,6 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
-[project.urls]
-Repository = "https://github.com/josephhzy/creditguard"
-Issues = "https://github.com/josephhzy/creditguard/issues"
-
 dependencies = [
     # Data
     "pandas>=2.0",
@@ -56,6 +52,10 @@ dependencies = [
     "rich>=13.7",
     "typer>=0.9",
 ]
+
+[project.urls]
+Repository = "https://github.com/josephhzy/creditguard"
+Issues = "https://github.com/josephhzy/creditguard/issues"
 
 [project.optional-dependencies]
 dev = [

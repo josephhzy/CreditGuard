@@ -104,7 +104,10 @@ class TestFeatureSelection:
         )
         # Deterministic target: majority vote of thresholded signal features
         y = pd.Series(
-            ((signal0 > 0).astype(int) + (signal1 > 0).astype(int) + (signal2 > 0).astype(int) >= 2).astype(int),
+            (
+                (signal0 > 0).astype(int) + (signal1 > 0).astype(int) + (signal2 > 0).astype(int)
+                >= 2
+            ).astype(int),
             name="TARGET",
         )
         selected, report = boruta_select(X, y, max_iter=50, random_state=42)
